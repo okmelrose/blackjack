@@ -1,0 +1,247 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<title>FINEST Blackjack</title>
+<style>
+    body {
+        margin: 0;
+        background: #045;
+        color: white;
+        font-family: Arial, sans-serif;
+        text-align: center;
+    }
+    h1 {
+        margin-top: 20px;
+        font-size: 3rem;
+        text-shadow: 2px 2px 5px black;
+    }
+    #points {
+        font-size: 1.5rem;
+        margin-top: 10px;
+        color: #0f0;
+        font-weight: bold;
+    }
+    .hand {
+        margin: 20px;
+        padding: 10px;
+    }
+    .cards {
+        min-height: 80px;
+        margin: 10px;
+    }
+    .card {
+        display: inline-block;
+        background: white;
+        color: black;
+        width: 60px;
+        height: 80px;
+        line-height: 80px;
+        border-radius: 6px;
+        margin: 5px;
+        font-weight: bold;
+        font-size: 1.4rem;
+        box-shadow: 0 0 5px black;
+    }
+    #controls button {
+        padding: 12px 25px;
+        margin: 10px;
+        border: none;
+        border-radius: 6px;
+        background: #0a8;
+        color: white;
+        font-size: 1.2rem;
+        cursor: pointer;
+    }
+    #controls button:hover {
+        background: #0c6;
+    }
+    #message {
+        margin-top: 20px;
+        font-size: 1.8rem;
+        font-weight: bold;
+    }
+</style>
+</head>
+
+<body>
+<h1>♠ ♥ FINEST Blackjack ♣ ♦</h1>
+<div id="points">FINEST Points: 0</div>
+
+<div id="game">
+    <div class="hand">
+        <h2>Dealer</h2>
+        <div id="dealerCards" class="cards"></div>
+        <div id="dealerScore"></div>
+    </div>
+
+    <div class="hand">
+        <h2>You</h2>
+        <div id="playerCards" class="cards"></div>
+        <div id="playerScore"></div>
+    </div>
+
+    <div id="controls">
+        <button onclick="hit()">Hit</button>
+        <button onclick="stand()">Stand</button>
+        <button onclick="startGame()">New Game</button>
+    </div>
+
+    <div id="message"></div>
+</div>
+
+<script>
+    let deck = [];
+    let playerHand = [];
+    let dealerHand = [];
+    let finestPoints = 0;
+
+    // Load saved points
+    if (localStorage.getItem("finestPoints")) {
+        finestPoints = parseInt(localStorage.getItem("finestPoints"));
+    }
+    updatePointsDisplay();
+
+    function updatePointsDisplay() {
+        document.getElementById("points").innerText =
+            "FINEST Points: " + finestPoints;
+    }
+
+    function savePoints() {
+        localStorage.setItem("finestPoints", finestPoints);
+    }
+
+    function createDeck() {
+        const suits = ["♠","♥","♦","♣"];
+        const values = ["A","2","3","4","5","6","7",
+                        "8","9","10","J","Q","K"];
+        let newDeck = [];
+        for (let s of suits) {
+            for (let v of values) {
+                newDeck.push(v + s);
+            }
+        }
+        return shuffle(newDeck);
+    }
+
+    function shuffle(array) {
+        for (let i = array.length - 1; i > 0; i--) {
+            const j = Math.floor(Math.random() * (i + 1));
+            [array[i], array[j]] = [array[j], array[i]];
+        }
+        return array;
+    }
+
+    function getValue(card) {
+        let v = card.slice(0, -1);
+        if (v === "A") return 11;
+        if (["J","Q","K"].includes(v)) return 10;
+        return parseInt(v);
+    }
+
+    function calculateScore(hand) {
+        let total = 0;
+        let aces = 0;
+        for (let card of hand) {
+            total += getValue(card);
+            if (card[0] === "A") aces++;
+        }
+        while (total > 21 && aces > 0) {
+            total -= 10;
+            aces--;
+        }
+        return total;
+    }
+
+    function dealCard(hand) {
+        hand.push(deck.pop());
+        updateDisplay();
+    }
+
+    function updateDisplay(showDealerFull = false) {
+        document.getElementById("playerCards").innerHTML =
+            playerHand.map(c => `<div class="card">${c}</div>`).join("");
+        document.getElementById("playerScore").innerText =
+            "Score: " + calculateScore(playerHand);
+
+        let dealerVisible = "";
+
+        if (!showDealerFull) {
+            dealerVisible += `<div class="card">${dealerHand[0]}</div>`;
+            dealerVisible += `<div class="card">?</div>`;
+            document.getElementById("dealerScore").innerText = "";
+        } else {
+            dealerVisible =
+                dealerHand.map(c => `<div class="card">${c}</div>`).join("");
+            document.getElementById("dealerScore").innerText =
+                "Score: " + calculateScore(dealerHand);
+        }
+
+        document.getElementById("dealerCards").innerHTML = dealerVisible;
+    }
+
+    function startGame() {
+        deck = createDeck();
+        playerHand = [];
+        dealerHand = [];
+        document.getElementById("message").innerText = "";
+
+        dealCard(playerHand);
+        dealCard(dealerHand);
+        dealCard(playerHand);
+        dealCard(dealerHand);
+    }
+
+    function hit() {
+        if (calculateScore(playerHand) >= 21) return;
+        dealCard(playerHand);
+
+        if (calculateScore(playerHand) > 21) {
+            endGame();
+        }
+    }
+
+    function stand() {
+        while (calculateScore(dealerHand) < 17) {
+            dealCard(dealerHand);
+        }
+        endGame();
+    }
+
+    function endGame() {
+        updateDisplay(true);
+
+        let player = calculateScore(playerHand);
+        let dealer = calculateScore(dealerHand);
+        let msg = "";
+
+        if (player > 21) {
+            msg = "🔥 You busted! Dealer wins! -10 FINEST Points";
+            finestPoints -= 10;
+        } 
+        else if (dealer > 21) {
+            msg = "🎉 Dealer busts! You win! +10 FINEST Points";
+            finestPoints += 10;
+        }
+        else if (player > dealer) {
+            msg = "🏆 You win! +10 FINEST Points";
+            finestPoints += 10;
+        }
+        else if (player < dealer) {
+            msg = "💀 Dealer wins! -10 FINEST Points";
+            finestPoints -= 10;
+        }
+        else {
+            msg = "🤝 It's a tie! No points gained or lost";
+        }
+
+        document.getElementById("message").innerText = msg;
+        savePoints();
+        updatePointsDisplay();
+    }
+
+    startGame();
+</script>
+
+</body>
+</html>
