@@ -5,52 +5,54 @@
 <title>Boolymon Blackjack</title>
 <style>
 
+    /* WIN ANIMATION IMAGE */
     #winImage {
-    position: fixed;
-    top: 50%;
-    left: 50%;
-    transform: translate(-50%, -50%);
-    width: 200px;
-    height: 200px;
-    background-image: url("https://i.pinimg.com/736x/a1/75/33/a1753364ac83811725eed4bf26a6273b.jpg"); /* Replace with ANY Boolymon image */
-    background-size: cover;
-    background-position: center;
-    opacity: 0;
-    pointer-events: none;
-    z-index: 9999;
-}
+        position: fixed;
+        top: 50%;
+        left: 50%;
+        transform: translate(-50%, -50%);
+        width: 200px;
+        height: 200px;
+        background-image: url("https://i.pinimg.com/736x/a1/75/33/a1753364ac83811725eed4bf26a6273b.jpg");
+        background-size: cover;
+        background-position: center;
+        opacity: 0;
+        pointer-events: none;
+        z-index: 9999;
+    }
 
-.spinFade {
-    animation: spin360 1.5s ease-out forwards;
-}
+    .spinFade {
+        animation: spin360 1.5s ease-out forwards;
+    }
 
-@keyframes spin360 {
-    0% { opacity: 1; transform: translate(-50%, -50%) rotate(0deg) scale(1); }
-    70% { opacity: 1; transform: translate(-50%, -50%) rotate(360deg) scale(1.1); }
-    100% { opacity: 0; transform: translate(-50%, -50%) rotate(360deg) scale(0.5); }
-}
+    @keyframes spin360 {
+        0% { opacity: 1; transform: translate(-50%, -50%) rotate(0deg) scale(1); }
+        70% { opacity: 1; transform: translate(-50%, -50%) rotate(360deg) scale(1.1); }
+        100% { opacity: 0; transform: translate(-50%, -50%) rotate(360deg) scale(0.5); }
+    }
 
     body {
         margin: 0;
-        background: url("https://e.snmc.io/i/1200/s/2ddcdc200f863f3d7b1b2769813b3e8a/13450384"); /* Replace this URL with a valid Boolymon image */
+        background: url("https://e.snmc.io/i/1200/s/2ddcdc200f863f3d7b1b2769813b3e8a/13450384") no-repeat center center fixed;
         background-size: cover;
-        background-position: center;
-        background-repeat: no-repeat;
         color: white;
         font-family: Arial, sans-serif;
         text-align: center;
     }
+
     #overlay {
         background: rgba(0, 0, 0, 0.6);
         position: fixed;
-        top: 0; left: 0; right: 0; bottom: 0;
+        inset: 0;
         z-index: -1;
     }
+
     h1 {
         margin-top: 20px;
         font-size: 3rem;
         text-shadow: 2px 2px 8px black;
     }
+
     #points {
         font-size: 1.5rem;
         margin-top: 10px;
@@ -58,14 +60,17 @@
         font-weight: bold;
         text-shadow: 1px 1px 4px black;
     }
+
     .hand {
         margin: 20px;
         padding: 10px;
     }
+
     .cards {
         min-height: 80px;
         margin: 10px;
     }
+
     .card {
         display: inline-block;
         background: white;
@@ -79,6 +84,7 @@
         font-size: 1.4rem;
         box-shadow: 0 0 5px black;
     }
+
     #controls button {
         padding: 12px 25px;
         margin: 10px;
@@ -89,21 +95,29 @@
         font-size: 1.2rem;
         cursor: pointer;
     }
+
     #controls button:hover {
         background: #0c6;
     }
+
     #message {
         margin-top: 20px;
         font-size: 1.8rem;
         font-weight: bold;
         text-shadow: 1px 1px 5px black;
     }
+
 </style>
 </head>
 
 <body>
+
+<!-- 🎵 FIXED: Hidden YouTube Player -->
+<iframe id="musicPlayer" width="0" height="0" frameborder="0" allow="autoplay"></iframe>
+
 <div id="winImage"></div>
 <div id="overlay"></div>
+
 <h1>♠ ♥ Boolymon Blackjack ♣ ♦</h1>
 <div id="points">Boolymon Points: 0</div>
 
@@ -121,9 +135,9 @@
     </div>
 
     <div id="controls">
-        <button onclick="hit()">Hit</button>
-        <button onclick="stand()">Stand</button>
-        <button onclick="startGame()">New Game</button>
+        <button onclick="enableSoundAfterClick(); hit();">Hit</button>
+        <button onclick="enableSoundAfterClick(); stand();">Stand</button>
+        <button onclick="enableSoundAfterClick(); startGame();">New Game</button>
     </div>
 
     <div id="message"></div>
@@ -131,24 +145,14 @@
 
 <script>
 
-function playWinAnimation() {
-    const img = document.getElementById("winImage");
-    img.classList.remove("spinFade");   // reset animation
-    void img.offsetWidth;              // restart CSS animation trick
-    img.classList.add("spinFade");
-}
+/* ===========================
+   🎵 AUTOPLAY MUSIC SYSTEM
+   =========================== */
 
-
-    
-// ---- YouTube MUSIC AUTOPLAY SYSTEM ----
-
-// Put your YouTube link here:
-const YT_LINK = "https://www.youtube.com/watch?v=dmNWboq1b14"; // replace with your music
-
+const YT_LINK = "https://www.youtube.com/watch?v=dmNWboq1b14"; // your custom song
 let firstInteraction = false;
 
 function setupMusic() {
-    // Convert link to embed format
     let videoId = YT_LINK.split("v=")[1];
     if (videoId.includes("&")) videoId = videoId.split("&")[0];
 
@@ -159,168 +163,164 @@ function setupMusic() {
         "?autoplay=1&mute=1&loop=1&playlist=" + videoId;
 }
 
-// Unmute audio on first button click
 function enableSoundAfterClick() {
     if (!firstInteraction) {
         firstInteraction = true;
-
         const player = document.getElementById("musicPlayer");
-        // Reload player with sound ON
         player.src = player.src.replace("mute=1", "mute=0");
     }
 }
 
-// Call this once when the game loads
 setupMusic();
 
-    
-    let deck = [];
-    let playerHand = [];
-    let dealerHand = [];
-    let boolymonPoints = 0;
 
-    if (localStorage.getItem("boolymonPoints")) {
-        boolymonPoints = parseInt(localStorage.getItem("boolymonPoints"));
+/* ===========================
+   🎉 WIN ANIMATION
+   =========================== */
+
+function playWinAnimation() {
+    const img = document.getElementById("winImage");
+    img.classList.remove("spinFade");
+    void img.offsetWidth;
+    img.classList.add("spinFade");
+}
+
+
+/* ===========================
+   🃏 BLACKJACK GAME LOGIC
+   =========================== */
+
+let deck = [];
+let playerHand = [];
+let dealerHand = [];
+let boolymonPoints = parseInt(localStorage.getItem("boolymonPoints") || "0");
+
+updatePointsDisplay();
+
+function updatePointsDisplay() {
+    document.getElementById("points").innerText =
+        "Boolymon Points: " + boolymonPoints;
+}
+
+function savePoints() {
+    localStorage.setItem("boolymonPoints", boolymonPoints);
+}
+
+function createDeck() {
+    const suits = ["♠","♥","♦","♣"];
+    const values = ["A","2","3","4","5","6","7","8","9","10","J","Q","K"];
+    let newDeck = [];
+    for (let s of suits) for (let v of values) newDeck.push(v + s);
+    return shuffle(newDeck);
+}
+
+function shuffle(arr) {
+    for (let i = arr.length - 1; i > 0; i--) {
+        const j = Math.floor(Math.random() * (i + 1));
+        [arr[i], arr[j]] = [arr[j], arr[i]];
     }
+    return arr;
+}
+
+function getValue(card) {
+    let v = card.slice(0, -1);
+    if (v === "A") return 11;
+    if (["J","Q","K"].includes(v)) return 10;
+    return parseInt(v);
+}
+
+function calculateScore(hand) {
+    let total = 0, aces = 0;
+    for (let card of hand) {
+        total += getValue(card);
+        if (card.startsWith("A")) aces++;
+    }
+    while (total > 21 && aces--) total -= 10;
+    return total;
+}
+
+function dealCard(hand) {
+    hand.push(deck.pop());
+    updateDisplay();
+}
+
+function updateDisplay(showDealerFull = false) {
+    document.getElementById("playerCards").innerHTML =
+        playerHand.map(c => `<div class="card">${c}</div>`).join("");
+    document.getElementById("playerScore").innerText =
+        "Score: " + calculateScore(playerHand);
+
+    if (!showDealerFull) {
+        document.getElementById("dealerCards").innerHTML =
+            `<div class="card">${dealerHand[0]}</div><div class="card">?</div>`;
+        document.getElementById("dealerScore").innerText = "";
+    } else {
+        document.getElementById("dealerCards").innerHTML =
+            dealerHand.map(c => `<div class="card">${c}</div>`).join("");
+        document.getElementById("dealerScore").innerText =
+            "Score: " + calculateScore(dealerHand);
+    }
+}
+
+function startGame() {
+    deck = createDeck();
+    playerHand = [];
+    dealerHand = [];
+    document.getElementById("message").innerText = "";
+
+    dealCard(playerHand);
+    dealCard(dealerHand);
+    dealCard(playerHand);
+    dealCard(dealerHand);
+}
+
+function hit() {
+    if (calculateScore(playerHand) >= 21) return;
+    dealCard(playerHand);
+    if (calculateScore(playerHand) > 21) endGame();
+}
+
+function stand() {
+    while (calculateScore(dealerHand) < 17) dealCard(dealerHand);
+    endGame();
+}
+
+function endGame() {
+    updateDisplay(true);
+
+    let player = calculateScore(playerHand);
+    let dealer = calculateScore(dealerHand);
+    let msg = "";
+
+    if (player > 21) {
+        msg = "🔥 You busted! Dealer wins! -10 Boolymon Points";
+        boolymonPoints -= 10;
+    }
+    else if (dealer > 21) {
+        msg = "🎉 Dealer busts! You win! +10 Boolymon Points";
+        boolymonPoints += 10;
+        playWinAnimation();
+    }
+    else if (player > dealer) {
+        msg = "🏆 You win! +10 Boolymon Points";
+        boolymonPoints += 10;
+        playWinAnimation();
+    }
+    else if (player < dealer) {
+        msg = "💀 Dealer wins! -10 Boolymon Points";
+        boolymonPoints -= 10;
+    }
+    else {
+        msg = "🤝 It's a tie! No points changed";
+    }
+
+    document.getElementById("message").innerText = msg;
+    savePoints();
     updatePointsDisplay();
+}
 
-    function updatePointsDisplay() {
-        document.getElementById("points").innerText =
-            "Boolymon Points: " + boolymonPoints;
-    }
-    function savePoints() {
-        localStorage.setItem("boolymonPoints", boolymonPoints);
-    }
+startGame();
 
-    function createDeck() {
-        const suits = ["♠","♥","♦","♣"];
-        const values = ["A","2","3","4","5","6","7","8","9","10","J","Q","K"];
-        let newDeck = [];
-        for (let s of suits) {
-            for (let v of values) {
-                newDeck.push(v + s);
-            }
-        }
-        return shuffle(newDeck);
-    }
-
-    function shuffle(array) {
-        for (let i = array.length - 1; i > 0; i--) {
-            const j = Math.floor(Math.random() * (i + 1));
-            [array[i], array[j]] = [array[j], array[i]];
-        }
-        return array;
-    }
-
-    function getValue(card) {
-        let v = card.slice(0, -1);
-        if (v === "A") return 11;
-        if (["J","Q","K"].includes(v)) return 10;
-        return parseInt(v);
-    }
-
-    function calculateScore(hand) {
-        let total = 0;
-        let aces = 0;
-        for (let card of hand) {
-            total += getValue(card);
-            if (card[0] === "A") aces++;
-        }
-        while (total > 21 && aces > 0) {
-            total -= 10;
-            aces--;
-        }
-        return total;
-    }
-
-    function dealCard(hand) {
-        hand.push(deck.pop());
-        updateDisplay();
-    }
-
-    function updateDisplay(showDealerFull = false) {
-        document.getElementById("playerCards").innerHTML =
-            playerHand.map(c => `<div class="card">${c}</div>`).join("");
-        document.getElementById("playerScore").innerText =
-            "Score: " + calculateScore(playerHand);
-
-        let dealerVisible = "";
-        if (!showDealerFull) {
-            dealerVisible += `<div class="card">${dealerHand[0]}</div>`;
-            dealerVisible += `<div class="card">?</div>`;
-            document.getElementById("dealerScore").innerText = "";
-        } else {
-            dealerVisible =
-                dealerHand.map(c => `<div class="card">${c}</div>`).join("");
-            document.getElementById("dealerScore").innerText =
-                "Score: " + calculateScore(dealerHand);
-        }
-        document.getElementById("dealerCards").innerHTML = dealerVisible;
-    }
-
-    function startGame() {
-        deck = createDeck();
-        playerHand = [];
-        dealerHand = [];
-        document.getElementById("message").innerText = "";
-
-        dealCard(playerHand);
-        dealCard(dealerHand);
-        dealCard(playerHand);
-        dealCard(dealerHand);
-    }
-
-    function hit() {
-        if (calculateScore(playerHand) >= 21) return;
-        dealCard(playerHand);
-        if (calculateScore(playerHand) > 21) {
-            endGame();
-        }
-    }
-
-    function stand() {
-        while (calculateScore(dealerHand) < 17) {
-            dealCard(dealerHand);
-        }
-        endGame();
-    }
-
-    function endGame() {
-        updateDisplay(true);
-        let player = calculateScore(playerHand);
-        let dealer = calculateScore(dealerHand);
-        let msg = "";
-
-        if (player > 21) {
-            msg = "🔥 You busted! Dealer wins! -10 Boolymon Points";
-            boolymonPoints -= 10;
-        }
-        else if (dealer > 21) {
-            msg = "🎉 Dealer busts! You win! +10 Boolymon Points";
-            boolymonPoints += 10;
-            playWinAnimation();
-        }
-        else if (player > dealer) {
-            msg = "🏆 You win! +10 Boolymon Points";
-            boolymonPoints += 10;
-            playWinAnimation();
-        }
-        else if (player < dealer) {
-            msg = "💀 Dealer wins! -10 Boolymon Points";
-            boolymonPoints -= 10;
-        }
-        else {
-            msg = "🤝 It's a tie! No points changed";
-        }
-
-        document.getElementById("message").innerText = msg;
-        savePoints();
-        updatePointsDisplay();
-    }
-
-    startGame();
 </script>
-
 </body>
 </html>
-
