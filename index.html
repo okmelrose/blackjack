@@ -2,25 +2,35 @@
 <html lang="en">
 <head>
 <meta charset="UTF-8">
-<title>FINEST Blackjack</title>
+<title>Boolymon Blackjack</title>
 <style>
     body {
         margin: 0;
-        background: #045;
+        background: url("https://e.snmc.io/i/1200/s/2ddcdc200f863f3d7b1b2769813b3e8a/13450384"); /* Replace this URL with a valid Boolymon image */
+        background-size: cover;
+        background-position: center;
+        background-repeat: no-repeat;
         color: white;
         font-family: Arial, sans-serif;
         text-align: center;
     }
+    #overlay {
+        background: rgba(0, 0, 0, 0.6);
+        position: fixed;
+        top: 0; left: 0; right: 0; bottom: 0;
+        z-index: -1;
+    }
     h1 {
         margin-top: 20px;
         font-size: 3rem;
-        text-shadow: 2px 2px 5px black;
+        text-shadow: 2px 2px 8px black;
     }
     #points {
         font-size: 1.5rem;
         margin-top: 10px;
-        color: #0f0;
+        color: #ffeb3b;
         font-weight: bold;
+        text-shadow: 1px 1px 4px black;
     }
     .hand {
         margin: 20px;
@@ -60,13 +70,15 @@
         margin-top: 20px;
         font-size: 1.8rem;
         font-weight: bold;
+        text-shadow: 1px 1px 5px black;
     }
 </style>
 </head>
 
 <body>
-<h1>♠ ♥ FINEST Blackjack ♣ ♦</h1>
-<div id="points">FINEST Points: 0</div>
+<div id="overlay"></div>
+<h1>♠ ♥ Boolymon Blackjack ♣ ♦</h1>
+<div id="points">Boolymon Points: 0</div>
 
 <div id="game">
     <div class="hand">
@@ -94,27 +106,24 @@
     let deck = [];
     let playerHand = [];
     let dealerHand = [];
-    let finestPoints = 0;
+    let boolymonPoints = 0;
 
-    // Load saved points
-    if (localStorage.getItem("finestPoints")) {
-        finestPoints = parseInt(localStorage.getItem("finestPoints"));
+    if (localStorage.getItem("boolymonPoints")) {
+        boolymonPoints = parseInt(localStorage.getItem("boolymonPoints"));
     }
     updatePointsDisplay();
 
     function updatePointsDisplay() {
         document.getElementById("points").innerText =
-            "FINEST Points: " + finestPoints;
+            "Boolymon Points: " + boolymonPoints;
     }
-
     function savePoints() {
-        localStorage.setItem("finestPoints", finestPoints);
+        localStorage.setItem("boolymonPoints", boolymonPoints);
     }
 
     function createDeck() {
         const suits = ["♠","♥","♦","♣"];
-        const values = ["A","2","3","4","5","6","7",
-                        "8","9","10","J","Q","K"];
+        const values = ["A","2","3","4","5","6","7","8","9","10","J","Q","K"];
         let newDeck = [];
         for (let s of suits) {
             for (let v of values) {
@@ -165,7 +174,6 @@
             "Score: " + calculateScore(playerHand);
 
         let dealerVisible = "";
-
         if (!showDealerFull) {
             dealerVisible += `<div class="card">${dealerHand[0]}</div>`;
             dealerVisible += `<div class="card">?</div>`;
@@ -176,7 +184,6 @@
             document.getElementById("dealerScore").innerText =
                 "Score: " + calculateScore(dealerHand);
         }
-
         document.getElementById("dealerCards").innerHTML = dealerVisible;
     }
 
@@ -195,7 +202,6 @@
     function hit() {
         if (calculateScore(playerHand) >= 21) return;
         dealCard(playerHand);
-
         if (calculateScore(playerHand) > 21) {
             endGame();
         }
@@ -210,29 +216,28 @@
 
     function endGame() {
         updateDisplay(true);
-
         let player = calculateScore(playerHand);
         let dealer = calculateScore(dealerHand);
         let msg = "";
 
         if (player > 21) {
-            msg = "🔥 You busted! Dealer wins! -10 FINEST Points";
-            finestPoints -= 10;
-        } 
+            msg = "🔥 You busted! Dealer wins! -10 Boolymon Points";
+            boolymonPoints -= 10;
+        }
         else if (dealer > 21) {
-            msg = "🎉 Dealer busts! You win! +10 FINEST Points";
-            finestPoints += 10;
+            msg = "🎉 Dealer busts! You win! +10 Boolymon Points";
+            boolymonPoints += 10;
         }
         else if (player > dealer) {
-            msg = "🏆 You win! +10 FINEST Points";
-            finestPoints += 10;
+            msg = "🏆 You win! +10 Boolymon Points";
+            boolymonPoints += 10;
         }
         else if (player < dealer) {
-            msg = "💀 Dealer wins! -10 FINEST Points";
-            finestPoints -= 10;
+            msg = "💀 Dealer wins! -10 Boolymon Points";
+            boolymonPoints -= 10;
         }
         else {
-            msg = "🤝 It's a tie! No points gained or lost";
+            msg = "🤝 It's a tie! No points changed";
         }
 
         document.getElementById("message").innerText = msg;
@@ -245,3 +250,4 @@
 
 </body>
 </html>
+
