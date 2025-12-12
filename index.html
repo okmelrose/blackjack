@@ -103,6 +103,67 @@
 </div>
 
 <script>
+
+#winImage {
+    position: fixed;
+    top: 50%;
+    left: 50%;
+    transform: translate(-50%, -50%);
+    width: 200px;
+    height: 200px;
+    background-image: url("https://i.pinimg.com/736x/a1/75/33/a1753364ac83811725eed4bf26a6273b.jpg"); /* Replace with ANY Boolymon image */
+    background-size: cover;
+    background-position: center;
+    opacity: 0;
+    pointer-events: none;
+    z-index: 9999;
+}
+
+.spinFade {
+    animation: spin360 1.5s ease-out forwards;
+}
+
+@keyframes spin360 {
+    0% { opacity: 1; transform: translate(-50%, -50%) rotate(0deg) scale(1); }
+    70% { opacity: 1; transform: translate(-50%, -50%) rotate(360deg) scale(1.1); }
+    100% { opacity: 0; transform: translate(-50%, -50%) rotate(360deg) scale(0.5); }
+}
+
+    
+// ---- YouTube MUSIC AUTOPLAY SYSTEM ----
+
+// Put your YouTube link here:
+const YT_LINK = "https://www.youtube.com/watch?v=dmNWboq1b14"; // replace with your music
+
+let firstInteraction = false;
+
+function setupMusic() {
+    // Convert link to embed format
+    let videoId = YT_LINK.split("v=")[1];
+    if (videoId.includes("&")) videoId = videoId.split("&")[0];
+
+    const player = document.getElementById("musicPlayer");
+    player.src =
+        "https://www.youtube.com/embed/" +
+        videoId +
+        "?autoplay=1&mute=1&loop=1&playlist=" + videoId;
+}
+
+// Unmute audio on first button click
+function enableSoundAfterClick() {
+    if (!firstInteraction) {
+        firstInteraction = true;
+
+        const player = document.getElementById("musicPlayer");
+        // Reload player with sound ON
+        player.src = player.src.replace("mute=1", "mute=0");
+    }
+}
+
+// Call this once when the game loads
+setupMusic();
+
+    
     let deck = [];
     let playerHand = [];
     let dealerHand = [];
